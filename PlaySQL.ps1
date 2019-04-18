@@ -1,7 +1,8 @@
 $Global:SCCMSQLSERVER = "LOCALHOST" 
 $Global:DBNAME = "TEST" 
-
 $goFwd = 0
+
+clear
 
 Try 
 { 
@@ -32,9 +33,19 @@ if ($goFwd -eq 1) {
 	$table | Format-Table
     $result.Close()
   
-	$files = gci "2019042019\*.sql" | sort-object -property Name
+	$release = "2019042019"
+	if (test-path "$release\complete") {
+		write-host "Found folder"
+		$files = gci "$release\complete" | sort-object -property Name
+		$files | Format-Table
+	} else {
+		md "$release\complete"
+	}
+  
+	$files = gci "$release\*.sql" | sort-object -property Name
 	$files | Format-Table
 
+	$sqlcount = 0
 	foreach($file in $files) {
 		$name = "2019042019\" + $file.Name
 		write-host -NoNewLine "Reading sql file...."
@@ -47,18 +58,17 @@ if ($goFwd -eq 1) {
 			write-host -NoNewLine "   "
 			write-host -back cyan -fore black "--- WARNING!!! I found a script that contains the following (UPDATE and SET) ---"
 		} elseif ($query -notmatch "DELETE FROM" -and $query -notmatch "TRUNCATE TABLE" -and $query -notmatch "DROP TABLE") {
-		
 			write-host -fore cyan "  " $query
 			$command = $SQLConnection.CreateCommand()
 			$command.CommandText = $query
 			$result = $command.ExecuteReader()
-			
 			$table = new-object "System.Data.DataTable"
 			$table.Load($result)
 			$result.Close()
 			$table | Format-Table
-			
-			$result.Close()
+			$result.Close()			
+			copy-item $name "$release\complete"
+			$sqlcount++
 		} else {
 			write-host -fore cyan "  " $query
 			write-host -NoNewLine "   "
@@ -66,9 +76,12 @@ if ($goFwd -eq 1) {
 		}
 		write-host ""
 	}
-	
-	write-host
     write-host "Closing database...."
     $SQLConnection.Close() 
-	
+
+	if ($sqlcount -gt 0) {
+		write-host "You have executed $sqlcount script(s)"
+		$files = gci "$release\complete\*.sql" | sort-object -property Name
+		$files | Format-Table
+	}
 }
