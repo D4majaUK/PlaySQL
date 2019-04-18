@@ -64,8 +64,7 @@ if ($goFwd -eq 1) {
 			write-host -NoNewLine "   "
 			write-host -back red "--- WARNING!!! I found a script that contains one of the following (DELETE FROM, TRUNCATE TABLE, DROP TABLE) ---"
 		}
-
-
+		write-host ""
 	}
 	
 	write-host
