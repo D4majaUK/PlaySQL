@@ -45,7 +45,7 @@ if ($goFwd -eq 1) {
 		if ($query -match "UPDATE" -or $query -match "SET") {
 			write-host -fore cyan "  " $query
 			write-host -NoNewLine "   "
-			write-host -back cyan -fore black "WARNING!!! I found a script that contains the following (UPDATE and SET)"
+			write-host -back cyan -fore black "--- WARNING!!! I found a script that contains the following (UPDATE and SET) ---"
 		} elseif ($query -notmatch "DELETE FROM" -and $query -notmatch "TRUNCATE TABLE" -and $query -notmatch "DROP TABLE") {
 		
 			write-host -fore cyan "  " $query
@@ -62,7 +62,7 @@ if ($goFwd -eq 1) {
 		} else {
 			write-host -fore cyan "  " $query
 			write-host -NoNewLine "   "
-			write-host -back red "WARNING!!! I found a script that contains one of the following (DELETE FROM, TRUNCATE TABLE, DROP TABLE)"
+			write-host -back red "--- WARNING!!! I found a script that contains one of the following (DELETE FROM, TRUNCATE TABLE, DROP TABLE) ---"
 		}
 
 
