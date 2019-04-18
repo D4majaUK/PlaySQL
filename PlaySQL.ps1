@@ -17,6 +17,8 @@ catch
 } 
 
 if ($goFwd -eq 1) {
+
+    write-host "Getting info from database...."
     $query = "SELECT * FROM Hello"
     $command = $SQLConnection.CreateCommand()
     $command.CommandText = $query
@@ -28,6 +30,6 @@ if ($goFwd -eq 1) {
     $result.Close()
 
     $SQLConnection.Close() 
+    write-host "Closing database...."
 }
 
-docker
