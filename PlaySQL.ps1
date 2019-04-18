@@ -9,7 +9,7 @@ write-host "Connected"
 } 
 catch 
 { 
-    [System.Windows.Forms.MessageBox]::Show("Failed to connect SQL Server:")  
+    write-host "Failed to connect" 
 } 
 
 
@@ -24,3 +24,5 @@ $table | select-object @{Name="ID";Expression={$_.id}}, @{Name="First";Expressio
 $result.Close()
 
 $SQLConnection.Close() 
+
+docker
