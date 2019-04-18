@@ -1,3 +1,7 @@
+param (
+	[string] $force = "N"
+)
+
 $Global:SCCMSQLSERVER = "LOCALHOST" 
 $Global:DBNAME = "TEST" 
 $goFwd = 0
@@ -35,9 +39,17 @@ if ($goFwd -eq 1) {
   
 	$release = "2019042019"
 	if (test-path "$release\complete") {
-		write-host "Found folder"
-		$files = gci "$release\complete" | sort-object -property Name
-		$files | Format-Table
+		if ($force.ToUpper() -eq "Y") {
+			remove-item "$release\complete\*.*" -recurse -force
+		} else {
+			write-host "Found folder"
+			$ofiles = gci "$release\complete" | sort-object -property Name
+			$ofiles | Format-Table
+			if ($ofiles.count -gt 0) {
+				$prun = $ofiles.count
+				write-host "Looks like this function has been executed already - 2 files exist"
+			}
+		}
 	} else {
 		md "$release\complete"
 	}
@@ -53,11 +65,14 @@ if ($goFwd -eq 1) {
 		write-host -fore yellow $name
 		$query = get-content $name
 		
+		$done = 0
+		$ofiles | where-object{$_.Name -eq $file.Name} | foreach-object {write-host -fore green "   Found this:    complete\$_ - WILL NOT RUN!!!"; $done = 1;}
+		
 		if ($query -match "UPDATE" -or $query -match "SET") {
 			write-host -fore cyan "  " $query
 			write-host -NoNewLine "   "
 			write-host -back cyan -fore black "--- WARNING!!! I found a script that contains the following (UPDATE and SET) ---"
-		} elseif ($query -notmatch "DELETE FROM" -and $query -notmatch "TRUNCATE TABLE" -and $query -notmatch "DROP TABLE") {
+		} elseif ($query -notmatch "DELETE FROM" -and $query -notmatch "TRUNCATE TABLE" -and $query -notmatch "DROP TABLE" -and $done -eq 0) {
 			write-host -fore cyan "  " $query
 			$command = $SQLConnection.CreateCommand()
 			$command.CommandText = $query
