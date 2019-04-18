@@ -68,11 +68,14 @@ if ($goFwd -eq 1) {
 		$done = 0
 		$ofiles | where-object{$_.Name -eq $file.Name} | foreach-object {write-host -fore green "   Found this:    complete\$_ - WILL NOT RUN!!!"; $done = 1;}
 		
-		if ($query -match "UPDATE" -or $query -match "SET") {
+		if ($query.ToUpper() -match "UPDATE" -or $query.ToUpper() -match "SET") {
+			$command = $SQLConnection.CreateCommand()
+			$command.CommandText = $query
+			$result = $command.ExecuteNonQuery()
 			write-host -fore cyan "  " $query
 			write-host -NoNewLine "   "
 			write-host -back cyan -fore black "--- WARNING!!! I found a script that contains the following (UPDATE and SET) ---"
-		} elseif ($query -notmatch "DELETE FROM" -and $query -notmatch "TRUNCATE TABLE" -and $query -notmatch "DROP TABLE" -and $done -eq 0) {
+		} elseif ($query.ToUpper() -notmatch "DELETE FROM" -and $query.ToUpper() -notmatch "TRUNCATE TABLE" -and $query.ToUpper() -notmatch "DROP TABLE" -and $done -eq 0) {
 			write-host -fore cyan "  " $query
 			$command = $SQLConnection.CreateCommand()
 			$command.CommandText = $query
