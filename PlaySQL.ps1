@@ -94,6 +94,19 @@ if ($goFwd -eq 1) {
 		}
 		write-host ""
 	}
+
+	write-host ""
+    write-host "Getting updated info from database...."
+    $query = "SELECT * FROM Hello"
+    $command = $SQLConnection.CreateCommand()
+    $command.CommandText = $query
+    $result = $command.ExecuteReader()
+
+    $table = new-object "System.Data.DataTable"
+    $table.Load($result)
+	$table | Format-Table
+    $result.Close()
+
     write-host "Closing database...."
     $SQLConnection.Close() 
 
