@@ -74,10 +74,10 @@ if ($goFwd -eq 1) {
 			$result = $command.ExecuteNonQuery()
 			write-host -fore cyan $query
 			write-host -back cyan -fore black "--- WARNING!!! I found a script that contains the following (UPDATE and SET) ---"
-		} elseif ($query.ToUpper() -match "DELETE FROM" -or $query.ToUpper() -match "TRUNCATE TABLE" -or $query.ToUpper() -match "DROP TABLE" -and $done -eq 0) {
+		} elseif ($query.ToUpper() -match "DELETE FROM" -or $query.ToUpper() -match "TRUNCATE TABLE" -or $query.ToUpper() -match "DROP TABLE" -or $query.ToUpper() -match "ALTER TABLE" -and $done -eq 0) {
 			write-host -fore cyan $query
-			write-host -back red "--- WARNING!!! I found a script that contains one of the following (DELETE FROM, TRUNCATE TABLE, DROP TABLE) ---"
-		} elseif ($query.ToUpper() -notmatch "DELETE FROM" -and $query.ToUpper() -notmatch "TRUNCATE TABLE" -and $query.ToUpper() -notmatch "DROP TABLE" -and $done -eq 0) {
+			write-host -back red "--- WARNING!!! I found a script that contains one of the following (DELETE FROM, TRUNCATE TABLE, DROP TABLE, ALTER TABLE) ---"
+		} elseif ($query.ToUpper() -notmatch "DELETE FROM" -and $query.ToUpper() -notmatch "TRUNCATE TABLE" -and $query.ToUpper() -notmatch "DROP TABLE" -and $query.ToUpper() -notmatch "ALTER TABLE" -and $done -eq 0) {
 			write-host -fore cyan $query
 			$command = $SQLConnection.CreateCommand()
 			$command.CommandText = $query
