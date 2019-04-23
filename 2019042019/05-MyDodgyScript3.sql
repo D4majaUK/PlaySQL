@@ -1,1 +1,2 @@
+USE TEST
 DROP TABLE Hello
