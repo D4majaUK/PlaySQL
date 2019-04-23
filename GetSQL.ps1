@@ -3,6 +3,8 @@ $release = "2019042019"
 $files = gci "$release\*.sql" | sort-object -property Name
 $files | Format-Table
 
+$full = ""
+
 $sqlcount = 0
 foreach($file in $files) {
 	$name = "2019042019\" + $file.Name
@@ -10,6 +12,9 @@ foreach($file in $files) {
 	$name = "2019042019\" + $file.Name
 	write-host -fore yellow $name
 	$query = get-content $name -raw
+
+$full += $query
+$full += "`r`n`r`n"
 	
 	if ($query.ToUpper() -match "UPDATE" -or $query.ToUpper() -match "SET") {
 		write-host -fore cyan $query
@@ -23,3 +28,12 @@ foreach($file in $files) {
 	write-host ""
 	write-host ""
 }
+
+write-host ""
+write-host ""
+write-host "==>   The following is the full collection of scripts in one block   <=="
+write-host ""
+write-host ""
+write-host $full
+write-host ""
+write-host ""
