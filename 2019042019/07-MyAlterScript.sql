@@ -1,4 +1,2 @@
-ALTER TABLE Hello
-RENAME COLUMN "First" TO "First Name"
-ALTER TABLE Hello
-RENAME COLUMN "Last" TO "Last Name"
+EXEC sp_rename 'Hello.First', 'FirstName', 'COLUMN'
+EXEC sp_rename 'Hello.Last', 'LastName', 'COLUMN'
