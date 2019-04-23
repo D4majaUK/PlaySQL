@@ -26,8 +26,9 @@ $full += "`r`n`r`n"
 		} elseif ($query.ToUpper() -match "DELETE FROM" -or $query.ToUpper() -match "TRUNCATE TABLE" -or $query.ToUpper() -match "DROP TABLE") {
 			write-host -fore cyan $query
 			write-host -back red "--- WARNING!!! I found a script that contains one of the following (DELETE FROM, TRUNCATE TABLE, DROP TABLE) ---"
-		} elseif ($query.ToUpper() -notmatch "DELETE FROM" -and $query.ToUpper() -notmatch "TRUNCATE TABLE" -and $query.ToUpper() -notmatch "DROP TABLE") {
+		} elseif ($query.ToUpper() -match "EXEC") {
 			write-host -fore cyan $query
+			write-host -back magenta "--- CAUTION: Changing any part of an object name could break scripts and stored procedures ---"
 		} else {
 			write-host -fore cyan $query
 		}
