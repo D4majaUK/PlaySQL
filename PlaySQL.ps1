@@ -63,7 +63,7 @@ if ($goFwd -eq 1) {
 		write-host -NoNewLine "Reading sql file...."
 		$name = "2019042019\" + $file.Name
 		write-host -fore yellow $name
-		$query = get-content $name
+		$query = get-content $name -raw
 		
 		$done = 0
 		$ofiles | where-object{$_.Name -eq $file.Name} | foreach-object {write-host -fore green "   Found this:    complete\$_ - WILL NOT RUN!!!"; $done = 1;}
@@ -72,11 +72,13 @@ if ($goFwd -eq 1) {
 			$command = $SQLConnection.CreateCommand()
 			$command.CommandText = $query
 			$result = $command.ExecuteNonQuery()
-			write-host -fore cyan "  " $query
-			write-host -NoNewLine "   "
+			write-host -fore cyan $query
 			write-host -back cyan -fore black "--- WARNING!!! I found a script that contains the following (UPDATE and SET) ---"
+		} elseif ($query.ToUpper() -match "DELETE FROM" -or $query.ToUpper() -match "TRUNCATE TABLE" -or $query.ToUpper() -match "DROP TABLE" -and $done -eq 0) {
+			write-host -fore cyan $query
+			write-host -back red "--- WARNING!!! I found a script that contains one of the following (DELETE FROM, TRUNCATE TABLE, DROP TABLE) ---"
 		} elseif ($query.ToUpper() -notmatch "DELETE FROM" -and $query.ToUpper() -notmatch "TRUNCATE TABLE" -and $query.ToUpper() -notmatch "DROP TABLE" -and $done -eq 0) {
-			write-host -fore cyan "  " $query
+			write-host -fore cyan $query
 			$command = $SQLConnection.CreateCommand()
 			$command.CommandText = $query
 			$result = $command.ExecuteReader()
@@ -88,10 +90,9 @@ if ($goFwd -eq 1) {
 			copy-item $name "$release\complete"
 			$sqlcount++
 		} else {
-			write-host -fore cyan "  " $query
-			write-host -NoNewLine "   "
-			write-host -back red "--- WARNING!!! I found a script that contains one of the following (DELETE FROM, TRUNCATE TABLE, DROP TABLE) ---"
+			write-host -fore cyan $query
 		}
+		write-host ""
 		write-host ""
 	}
 
